@@ -1,2 +1,0 @@
-/workspaces/turbo-csv-2/build/CMakeFiles/rebuild_cache.dir
-/workspaces/turbo-csv-2/build/CMakeFiles/edit_cache.dir
