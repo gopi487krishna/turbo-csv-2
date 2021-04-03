@@ -10,6 +10,8 @@ add_definitions(-DEXAMPLES="${CMAKE_CURRENT_SOURCE_DIR}/test/test_files/")
 
 find_package(Boost REQUIRED COMPONENTS unit_test_framework)
 
+find_path(BOOST_INCLUDE_DIR boost/test/unit_test.hpp)
+
 include_directories(${BOOST_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 enable_testing()
