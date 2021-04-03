@@ -18,7 +18,7 @@ The two important concepts in turbo-csv2 are
 * token
 * events
 
-**token :** The smallest element of parsing in turbo-csv2 is field. Fields basically refer to the value of csv files seperated by a `,`
+**token :** The smallest element of parsing in turbo-csv2 is field. Fields basically refer to the value of csv files seperated by a `,` or some other **field seperator**
 
 **events :** Whenever the user calls next in csv_parser, the parser updates/ changes its state to indicate the current events active.
 
