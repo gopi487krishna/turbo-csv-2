@@ -13,6 +13,11 @@ The parser only supports reading of tokens and maintaining the internal state. I
 
 ## Design
 
+![image](https://user-images.githubusercontent.com/56198900/113488556-87faab00-94dc-11eb-9e3c-6947def9fa40.png)
+
+
+
+
 The two important concepts in turbo-csv2 are
 
 * token
