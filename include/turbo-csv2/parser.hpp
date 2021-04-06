@@ -20,7 +20,7 @@ namespace turbo_csv {
             file_reader(filepath)
         {
             if (!file_reader.is_open()) {
-                event_mask = event::event_type::ERRORED;
+                event_mask = event_type::ERRORED;
             }
         }
 
@@ -31,7 +31,7 @@ namespace turbo_csv {
          */
         event next() noexcept(false) {
 
-            if (event_mask & event::event_type::END_DOCUMENT || event_mask & event::event_type::ERRORED) {
+            if (event_mask & event_type::END_DOCUMENT || event_mask & event_type::ERRORED) {
                 return event{ "", event_mask };
             }
             else {
@@ -53,7 +53,7 @@ namespace turbo_csv {
                 auto byte = file_reader.get_byte();
 
                 if (is_no_data_event(byte, raw_token)) {return event{ "",event_mask };}
-                if (is_last_record(byte)) {set_event(event::event_type::END_RECORD);return event{ raw_token,event_mask };}
+                if (is_last_record(byte)) {set_event(event_type::END_RECORD);return event{ raw_token,event_mask };}
                 
                 if (Dialect::is_escapecharacter(*byte)) {
                     escape_count += 1;
@@ -92,11 +92,11 @@ namespace turbo_csv {
         bool is_no_data_event(const std::optional<std::uint8_t>& byte, const std::string& raw_token)noexcept {
 
             if (file_reader.is_errored()) {
-                set_event(event::event_type::ERRORED);
+                set_event(event_type::ERRORED);
                 return true;
             }
             else if (is_end_of_document(byte, raw_token)) {
-                set_event(event::event_type::END_DOCUMENT);
+                set_event(event_type::END_DOCUMENT);
                 return true;
             }
 
@@ -122,18 +122,18 @@ namespace turbo_csv {
         }
 
         void set_record_seperator_event()noexcept {
-            set_event(event::event_type::END_RECORD | event::event_type::FIELD);
+            set_event(event_type::END_RECORD | event_type::FIELD);
         }
 
         void set_field_seperator_event() noexcept {
-            if (event_mask == 0 || event_mask & event::event_type::END_RECORD) {
-                set_event(event::event_type::START_RECORD);
+            if (event_mask == 0 || event_mask & event_type::END_RECORD) {
+                set_event(event_type::START_RECORD);
             }
-            else if (event_mask & event::event_type::START_RECORD) {
+            else if (event_mask & event_type::START_RECORD) {
                 event_mask = 0;
             }
 
-            set_event(event_mask | event::event_type::FIELD);
+            set_event(event_mask | event_type::FIELD);
         }
 
         bool membership_in_escape_set(std::int32_t escape_count) noexcept {return escape_count%2!=0;}

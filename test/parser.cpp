@@ -24,11 +24,11 @@ BOOST_AUTO_TEST_CASE(row_count) {
     while (true) {
         auto current_token = csv_parser.next();
 
-        if (current_token.event_active(event::event_type::END_DOCUMENT) || current_token.event_active(event::event_type::ERRORED)) {
+        if (current_token.is_active(event_type::END_DOCUMENT) || current_token.is_active(event_type::ERRORED)) {
             break;
         }
 
-        if (current_token.event_active(event::event_type::END_RECORD)) {
+        if (current_token.is_active(event_type::END_RECORD)) {
             row_count++;
         }
     }
@@ -43,11 +43,11 @@ BOOST_AUTO_TEST_CASE(row_count_large_file) {
     while (true) {
         auto current_token = csv_parser.next();
 
-        if (current_token.event_active(event::event_type::END_DOCUMENT) || current_token.event_active(event::event_type::ERRORED)) {
+        if (current_token.is_active(event_type::END_DOCUMENT) || current_token.is_active(event_type::ERRORED)) {
             break;
         }
 
-        if (current_token.event_active(event::event_type::END_RECORD)) {
+        if (current_token.is_active(event_type::END_RECORD)) {
             row_count++;
         }
     }
@@ -61,11 +61,11 @@ BOOST_AUTO_TEST_CASE(row_count_by_counting_start_of_records) {
 
     while (true) {
         auto current_token = csv_parser.next();
-        if (current_token.event_active(event::event_type::END_DOCUMENT) || current_token.event_active(event::event_type::ERRORED)) {
+        if (current_token.is_active(event_type::END_DOCUMENT) || current_token.is_active(event_type::ERRORED)) {
             break;
         }
 
-        if (current_token.event_active(event::event_type::START_RECORD)) {
+        if (current_token.is_active(event_type::START_RECORD)) {
             row_count++;
         }
     }
@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE(errored_stream) {
 
     auto current_token = csv_parser.next();
 
-    BOOST_ASSERT(current_token.event_active(event::event_type::ERRORED));
+    BOOST_ASSERT(current_token.is_active(event_type::ERRORED));
 
 }
 BOOST_AUTO_TEST_SUITE_END()

@@ -7,22 +7,28 @@
 #include<boost/lexical_cast.hpp>
 
 namespace turbo_csv {
+
+    enum event_type :std::uint8_t {
+        END_DOCUMENT = 1,
+        FIELD = 2,
+        START_RECORD = 4,
+        END_RECORD = 8,
+        ERRORED = 16
+    };
+
     struct event {
-
-        enum event_type:std::uint8_t {
-            END_DOCUMENT = 1,
-            FIELD = 2,
-            START_RECORD = 4,
-            END_RECORD = 8,
-            ERRORED = 16
-        };
-
     private:
 
         std::string token;
-        std::uint8_t event_mask;
+        std::uint8_t event_mask=0;
 
     public:
+
+        /**
+         * @brief Construct a default constructed event object
+         * 
+         */
+        event()=default;
 
         /**
          * @brief Construct a new event object
@@ -71,7 +77,7 @@ namespace turbo_csv {
          * @return true
          * @return false
          */
-        bool event_active(event_type type)const noexcept {
+        bool is_active(event_type type)const noexcept {
             bool state = false;
 
             switch (type) {
@@ -92,6 +98,17 @@ namespace turbo_csv {
                 break;
             }
             return state;
+        }
+
+        /**
+         * @brief Checks if a set of events are active
+         * 
+         * @param check_mask Events to be checked for
+         * @return true  Events supplied in the check_mask are active
+         * @return false  Events supplied in the check_mask are not active
+         */
+        bool is_active(std::int32_t check_mask)const noexcept{
+            return event_mask&check_mask==check_mask?true:false;
         }
 
     };
