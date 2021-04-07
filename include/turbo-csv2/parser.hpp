@@ -10,7 +10,7 @@ namespace turbo_csv {
     private:
         std::string raw_token;
         std::uint8_t event_mask = 0; // Holds current active events of the parser (state)
-        std::int32_t escape_count = 0; // Zero it on record ending
+        std::int32_t escape_count = 0; 
     public:
 
         parser(FileReader& file_reader) :file_reader(file_reader) {}
@@ -68,6 +68,7 @@ namespace turbo_csv {
                     else {
 
                         if (is_seperator(*byte)) {
+                            escape_count=0;
                             process_seperators(*byte);
                             auto current_event = event{ raw_token,event_mask };
                             raw_token.clear();

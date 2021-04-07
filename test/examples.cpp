@@ -42,7 +42,7 @@ void memory_based_row_count() {
     std::string data = get_file_data(get_examples_dir() + "business-price-index.csv");
 
     // 10 byte internal circular queue buffer
-    turbo_csv::csv_stream memory_stream(10);
+    turbo_csv::memory_stream memory_stream(10);
 
     // Should have probably used a coroutine to do this
     auto data_start_pos=data.begin();
@@ -50,7 +50,7 @@ void memory_based_row_count() {
 
     int row_count = 0;
     turbo_csv::event current_event;
-    turbo_csv::parser<turbo_csv::csv_stream, turbo_csv::dialect> csv_reader(memory_stream);
+    turbo_csv::parser<turbo_csv::memory_stream, turbo_csv::dialect> csv_reader(memory_stream);
 
     
      auto fill_buffer = [&]() {
