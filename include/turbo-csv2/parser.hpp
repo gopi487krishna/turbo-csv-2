@@ -4,16 +4,16 @@
 #include<turbo-csv2/event.hpp>
 
 namespace turbo_csv {
-    template<typename FileReader, typename Dialect>
+    template<typename Reader, typename Dialect>
     struct parser {
-        FileReader& file_reader;
+        Reader& reader;
     private:
         std::string raw_token;
         std::uint8_t event_mask = 0; // Holds current active events of the parser (state)
         std::int32_t escape_count = 0; 
     public:
 
-        parser(FileReader& file_reader) :file_reader(file_reader) {}
+        parser(Reader& reader) :reader(reader) {}
 
         /**
          * @brief Retrieves the current state of parser and parses the token if possible
@@ -38,7 +38,7 @@ namespace turbo_csv {
             
             while (true) {
 
-                if (file_reader.is_errored()) {
+                if (reader.is_errored()) {
                     set_error_event();
                     return event{"",event_mask};
                 }
@@ -46,7 +46,7 @@ namespace turbo_csv {
                     clear_error_event();
                 }
 
-                auto byte = file_reader.get_byte();
+                auto byte = reader.get_byte();
 
                 if (is_no_data_event(byte, raw_token)) { return event{ "",event_mask }; }
 
