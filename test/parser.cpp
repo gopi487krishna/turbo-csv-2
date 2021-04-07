@@ -18,7 +18,8 @@ auto get_examples_dir() {
 BOOST_AUTO_TEST_SUITE(parser_methods)
 
 BOOST_AUTO_TEST_CASE(row_count) {
-    parser<adapted_fstream, dialect> csv_parser(get_examples_dir() + "cars.csv");
+    adapted_fstream file_stream(get_examples_dir() + "cars.csv");
+    parser<adapted_fstream, dialect> csv_parser(file_stream);
     std::int32_t row_count = 0;
 
     while (true) {
@@ -37,7 +38,10 @@ BOOST_AUTO_TEST_CASE(row_count) {
 }
 
 BOOST_AUTO_TEST_CASE(row_count_large_file) {
-    parser<adapted_fstream, dialect> csv_parser(get_examples_dir() + "business-price-index.csv");
+    
+    adapted_fstream file_stream(get_examples_dir() + "business-price-index.csv");
+    parser<adapted_fstream, dialect> csv_parser(file_stream);
+
     std::int32_t row_count = 0;
 
     while (true) {
@@ -56,7 +60,9 @@ BOOST_AUTO_TEST_CASE(row_count_large_file) {
 }
 
 BOOST_AUTO_TEST_CASE(row_count_by_counting_start_of_records) {
-    parser<adapted_fstream, dialect> csv_parser(get_examples_dir() + "business-price-index.csv");
+    adapted_fstream file_stream(get_examples_dir() + "business-price-index.csv");
+    parser<adapted_fstream, dialect> csv_parser(file_stream);
+    
     std::int32_t row_count = 0;
 
     while (true) {
@@ -75,7 +81,8 @@ BOOST_AUTO_TEST_CASE(row_count_by_counting_start_of_records) {
 }
 
 BOOST_AUTO_TEST_CASE(errored_stream) {
-    parser<adapted_fstream, dialect> csv_parser("meow");
+    adapted_fstream file_stream(get_examples_dir() + "meow");
+    parser<adapted_fstream, dialect> csv_parser(file_stream);
 
     auto current_token = csv_parser.next();
 

@@ -54,7 +54,7 @@ namespace turbo_csv {
 		 * @return bool
 		 */
 		auto is_errored(){
-			return file.bad();
+			return file.bad() || !file.is_open();
 		}
 
 
