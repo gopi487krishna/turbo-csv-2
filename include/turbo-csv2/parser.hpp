@@ -2,18 +2,21 @@
 #define PARSER_HPP
 
 #include<turbo-csv2/event.hpp>
+#include<turbo-csv2/memstream.hpp>
 
 namespace turbo_csv {
-    template<typename Reader, typename Dialect>
+    template<typename Dialect>
     struct parser {
-        Reader& reader;
+        memory_stream mem_stream;
     private:
         std::string raw_token;
         std::uint8_t event_mask = 0; // Holds current active events of the parser (state)
         std::int32_t escape_count = 0; 
     public:
 
-        parser(Reader& reader) :reader(reader) {}
+        parser(std::uint8_t* buffer_handle, std::size_t buffer_capacity):
+        mem_stream(buffer_handle,buffer_capacity)
+        {}
 
         /**
          * @brief Retrieves the current state of parser and parses the token if possible
@@ -30,6 +33,16 @@ namespace turbo_csv {
             }
         }
 
+        /**
+         * @brief Get the memory stream manager
+         * 
+         * @return memory_stream& Reference to the internal memory stream manager
+         */
+        memory_stream& get_memory_stream(){
+            return mem_stream;
+
+        }
+
 
         // Helper methods
     private:
@@ -38,7 +51,7 @@ namespace turbo_csv {
             
             while (true) {
 
-                if (reader.is_errored()) {
+                if (mem_stream.is_errored()) {
                     set_error_event();
                     return event{"",event_mask};
                 }
@@ -46,7 +59,7 @@ namespace turbo_csv {
                     clear_error_event();
                 }
 
-                auto byte = reader.get_byte();
+                auto byte = mem_stream.get_byte();
 
                 if (is_no_data_event(byte, raw_token)) { return event{ "",event_mask }; }
 

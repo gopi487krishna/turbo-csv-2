@@ -2,18 +2,26 @@
 #define MEMSTREAM_HPP
 
 #include<boost/circular_buffer.hpp>
+#include<turbo-csv2/custom_allocator.hpp>
 
 namespace turbo_csv {
     class memory_stream {
         bool stream_open;
-        boost::circular_buffer<std::uint8_t> data_buffer;
+        fixed_allocator<std::uint8_t> custom_allocator;
+        boost::circular_buffer<std::uint8_t,fixed_allocator<std::uint8_t>> data_buffer;
     public:
         /**
          * @brief Construct a new memory stream object
          *
          * @param buffer_size Internal buffer size
          */
-        memory_stream(std::size_t buffer_size = 1024) :stream_open(true), data_buffer(buffer_size) { }
+        memory_stream(std::uint8_t* buffer_handle, std::size_t buffer_capacity) :
+        stream_open(true), 
+        custom_allocator(buffer_handle,buffer_capacity),
+        data_buffer(buffer_capacity,custom_allocator) 
+        {
+           
+         }
 
         /**
          * @brief Returns whether stream is open or has been closed

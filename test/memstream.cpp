@@ -8,24 +8,28 @@ using namespace turbo_csv;
 BOOST_AUTO_TEST_SUITE(csv_stream_methods)
 
 BOOST_AUTO_TEST_CASE(stream_closed){
-    memory_stream test_stream;
+    std::uint8_t raw_buf[5];
+    memory_stream test_stream(raw_buf,5);
     test_stream.close();
     BOOST_ASSERT(!test_stream.is_open());
 }
 
 BOOST_AUTO_TEST_CASE(insert_data){
-    memory_stream test_stream;
+    std::uint8_t raw_buf[5];
+    memory_stream test_stream(raw_buf,5);
     test_stream.push_back('A');
     BOOST_REQUIRE_EQUAL('A',test_stream.get_byte().value());
 }
 
 BOOST_AUTO_TEST_CASE(empty_buffer){
-    memory_stream test_stream;
+    std::uint8_t raw_buf[5];
+    memory_stream test_stream(raw_buf,5);
     BOOST_ASSERT(!test_stream.get_byte().has_value());
 }
 
 BOOST_AUTO_TEST_CASE(fully_consumed_buffer){
-    memory_stream test_stream;
+   std::uint8_t raw_buf[3];
+    memory_stream test_stream(raw_buf,3);
     test_stream.push_back('A');
     test_stream.push_back('B');
     test_stream.push_back('C');
@@ -40,7 +44,8 @@ BOOST_AUTO_TEST_CASE(fully_consumed_buffer){
 }
 
 BOOST_AUTO_TEST_CASE(free_space){
-    memory_stream test_stream(3);
+    std::uint8_t raw_buf[3];
+    memory_stream test_stream(raw_buf,3);
     BOOST_REQUIRE_EQUAL(3,test_stream.get_freespace());
     
     test_stream.push_back('A');
@@ -52,7 +57,8 @@ BOOST_AUTO_TEST_CASE(free_space){
     
 }
 BOOST_AUTO_TEST_CASE(insert_x_bytes){
-    memory_stream test_stream(3);
+    std::uint8_t raw_buf[3];
+    memory_stream test_stream(raw_buf,3);
     
     std::string test_data;
     test_data.push_back('A');
@@ -82,7 +88,8 @@ BOOST_AUTO_TEST_CASE(insert_x_bytes){
 }
 
 BOOST_AUTO_TEST_CASE(is_errored){
-    memory_stream test_stream(3);
+    std::uint8_t raw_buf[3];
+    memory_stream test_stream(raw_buf,3);
     std::string data{'A','B','C'};
 
     test_stream.insert(data.begin(),data.end());
@@ -95,7 +102,8 @@ BOOST_AUTO_TEST_CASE(is_errored){
 }
 
 BOOST_AUTO_TEST_CASE(is_not_errored){
-    memory_stream test_stream(3);
+    std::uint8_t raw_buf[3];
+    memory_stream test_stream(raw_buf,3);
     std::string data{'A','B','C'};
 
     test_stream.insert(data.begin(),data.end());

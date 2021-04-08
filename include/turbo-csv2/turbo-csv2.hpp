@@ -9,7 +9,7 @@
 
 namespace turbo_csv{
 
-    using csv_parser = parser<adapted_fstream,dialect>;
+   using csv_parser = parser<dialect>;
 
 }
 

@@ -3,6 +3,7 @@
 #include<turbo-csv2/dialect.hpp>
 #include<turbo-csv2/parser.hpp>
 #include<turbo-csv2/fstream_adaptor.hpp>
+#include<sstream>
 
 #include<boost/test/unit_test.hpp>
 
@@ -18,8 +19,21 @@ auto get_examples_dir() {
 BOOST_AUTO_TEST_SUITE(parser_methods)
 
 BOOST_AUTO_TEST_CASE(row_count) {
-    adapted_fstream file_stream(get_examples_dir() + "cars.csv");
-    parser<adapted_fstream, dialect> csv_parser(file_stream);
+
+    std::fstream file(get_examples_dir()+"cars.csv");    
+    std::stringstream raw_buffer;
+    raw_buffer<<file.rdbuf();
+    std::string data=raw_buffer.str();
+
+
+    std::uint8_t* raw_buf= new std::uint8_t[data.size()];
+
+
+    parser<dialect> csv_parser(raw_buf,data.size());
+    csv_parser.get_memory_stream().insert(data.begin(),data.end());
+    csv_parser.get_memory_stream().close();
+
+
     std::int32_t row_count = 0;
 
     while (true) {
@@ -39,8 +53,16 @@ BOOST_AUTO_TEST_CASE(row_count) {
 
 BOOST_AUTO_TEST_CASE(row_count_large_file) {
     
-    adapted_fstream file_stream(get_examples_dir() + "business-price-index.csv");
-    parser<adapted_fstream, dialect> csv_parser(file_stream);
+    std::fstream file(get_examples_dir()+"business-price-index.csv");    
+    std::stringstream raw_buffer;
+    raw_buffer<<file.rdbuf();
+    std::string data=raw_buffer.str();
+
+    std::uint8_t* raw_buf= new std::uint8_t[data.size()];
+
+    parser<dialect> csv_parser(raw_buf,data.size());
+    csv_parser.get_memory_stream().insert(data.begin(),data.end());
+   csv_parser.get_memory_stream().close();
 
     std::int32_t row_count = 0;
 
@@ -60,8 +82,17 @@ BOOST_AUTO_TEST_CASE(row_count_large_file) {
 }
 
 BOOST_AUTO_TEST_CASE(row_count_by_counting_start_of_records) {
-    adapted_fstream file_stream(get_examples_dir() + "business-price-index.csv");
-    parser<adapted_fstream, dialect> csv_parser(file_stream);
+
+    std::fstream file(get_examples_dir()+"business-price-index.csv");    
+    std::stringstream raw_buffer;
+    raw_buffer<<file.rdbuf();
+    std::string data=raw_buffer.str();
+
+    std::uint8_t* raw_buf= new std::uint8_t[data.size()];
+
+    parser<dialect> csv_parser(raw_buf,data.size());
+    csv_parser.get_memory_stream().insert(data.begin(),data.end());
+    csv_parser.get_memory_stream().close();
     
     std::int32_t row_count = 0;
 
@@ -81,8 +112,10 @@ BOOST_AUTO_TEST_CASE(row_count_by_counting_start_of_records) {
 }
 
 BOOST_AUTO_TEST_CASE(errored_stream) {
-    adapted_fstream file_stream(get_examples_dir() + "meow");
-    parser<adapted_fstream, dialect> csv_parser(file_stream);
+  
+    std::uint8_t raw_buf[5];
+    parser<dialect> csv_parser(raw_buf,5);
+
 
     auto current_token = csv_parser.next();
 
