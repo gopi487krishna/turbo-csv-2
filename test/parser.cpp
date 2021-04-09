@@ -2,9 +2,8 @@
 
 #include<turbo-csv2/dialect.hpp>
 #include<turbo-csv2/parser.hpp>
-#include<turbo-csv2/fstream_adaptor.hpp>
 #include<sstream>
-
+#include<fstream>
 #include<boost/test/unit_test.hpp>
 
 
@@ -15,23 +14,25 @@ auto get_examples_dir() {
     return std::string(EXAMPLES);
 }
 
+std::string get_data(const std::string& filename){
+    std::fstream file(filename);
+    std::stringstream data_stream;
+    data_stream<<file.rdbuf();
+    return data_stream.str();
+}
+
 
 BOOST_AUTO_TEST_SUITE(parser_methods)
 
 BOOST_AUTO_TEST_CASE(row_count) {
 
-    std::fstream file(get_examples_dir()+"cars.csv");    
-    std::stringstream raw_buffer;
-    raw_buffer<<file.rdbuf();
-    std::string data=raw_buffer.str();
+    std::string data=get_data(get_examples_dir()+"cars.csv");
+    char* raw_buf=(char*)(data.c_str());
 
+    parser<dialect> csv_parser;
+    csv_parser.put_buffer(raw_buf,std::strlen(raw_buf));
+    csv_parser.close_stream();
 
-    std::uint8_t* raw_buf= new std::uint8_t[data.size()];
-
-
-    parser<dialect> csv_parser(raw_buf,data.size());
-    csv_parser.get_memory_stream().insert(data.begin(),data.end());
-    csv_parser.get_memory_stream().close();
 
 
     std::int32_t row_count = 0;
@@ -53,16 +54,13 @@ BOOST_AUTO_TEST_CASE(row_count) {
 
 BOOST_AUTO_TEST_CASE(row_count_large_file) {
     
-    std::fstream file(get_examples_dir()+"business-price-index.csv");    
-    std::stringstream raw_buffer;
-    raw_buffer<<file.rdbuf();
-    std::string data=raw_buffer.str();
+    std::string data=get_data(get_examples_dir()+"business-price-index.csv");
+    char* raw_buf=(char*)(data.c_str());
 
-    std::uint8_t* raw_buf= new std::uint8_t[data.size()];
+    parser<dialect> csv_parser;
+    csv_parser.put_buffer(raw_buf,std::strlen(raw_buf));
+    csv_parser.close_stream();
 
-    parser<dialect> csv_parser(raw_buf,data.size());
-    csv_parser.get_memory_stream().insert(data.begin(),data.end());
-   csv_parser.get_memory_stream().close();
 
     std::int32_t row_count = 0;
 
@@ -83,16 +81,13 @@ BOOST_AUTO_TEST_CASE(row_count_large_file) {
 
 BOOST_AUTO_TEST_CASE(row_count_by_counting_start_of_records) {
 
-    std::fstream file(get_examples_dir()+"business-price-index.csv");    
-    std::stringstream raw_buffer;
-    raw_buffer<<file.rdbuf();
-    std::string data=raw_buffer.str();
+    std::string data=get_data(get_examples_dir()+"business-price-index.csv");
+    char* raw_buf=(char*)(data.c_str());
 
-    std::uint8_t* raw_buf= new std::uint8_t[data.size()];
+    parser<dialect> csv_parser;
+    csv_parser.put_buffer(raw_buf,std::strlen(raw_buf));
+    csv_parser.close_stream();
 
-    parser<dialect> csv_parser(raw_buf,data.size());
-    csv_parser.get_memory_stream().insert(data.begin(),data.end());
-    csv_parser.get_memory_stream().close();
     
     std::int32_t row_count = 0;
 
@@ -113,8 +108,7 @@ BOOST_AUTO_TEST_CASE(row_count_by_counting_start_of_records) {
 
 BOOST_AUTO_TEST_CASE(errored_stream) {
   
-    std::uint8_t raw_buf[5];
-    parser<dialect> csv_parser(raw_buf,5);
+    parser<dialect> csv_parser;
 
 
     auto current_token = csv_parser.next();

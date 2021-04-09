@@ -4,7 +4,6 @@
 #include<turbo-csv2/parser.hpp>
 #include<turbo-csv2/event.hpp>
 #include<turbo-csv2/dialect.hpp>
-#include<turbo-csv2/fstream_adaptor.hpp>
 
 
 namespace turbo_csv{

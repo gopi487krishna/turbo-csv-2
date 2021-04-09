@@ -1,22 +1,21 @@
 #ifndef PARSER_HPP
 #define PARSER_HPP
 
+#include<deque>
 #include<turbo-csv2/event.hpp>
-#include<turbo-csv2/memstream.hpp>
 
 namespace turbo_csv {
     template<typename Dialect>
     struct parser {
-        memory_stream mem_stream;
+        bool stream_closed=false;
+        std::deque<std::uint8_t> temp_buffer;
     private:
         std::string raw_token;
         std::uint8_t event_mask = 0; // Holds current active events of the parser (state)
         std::int32_t escape_count = 0; 
     public:
 
-        parser(std::uint8_t* buffer_handle, std::size_t buffer_capacity):
-        mem_stream(buffer_handle,buffer_capacity)
-        {}
+        parser()=default;
 
         /**
          * @brief Retrieves the current state of parser and parses the token if possible
@@ -34,14 +33,51 @@ namespace turbo_csv {
         }
 
         /**
-         * @brief Get the memory stream manager
+         * @brief Closes the internal stream for reading
+         * @note closing the stream essentially means trigerring the end of document
          * 
-         * @return memory_stream& Reference to the internal memory stream manager
          */
-        memory_stream& get_memory_stream(){
-            return mem_stream;
+        void close_stream(){
+            stream_closed=true;
+        }
+
+        /**
+         * @brief Returns the number of bytes consumed from 'data' buffer
+         * 
+         * @param data Buffer containing csv data
+         * @param size The amount of data present
+         * @return std::size_t Bytes consumed from the buffer
+         * @note Instead of consuming from the starting the method starts from 
+         *       back and only starts consuming when finding a newline that is not
+         *       escaped
+         */
+
+        std::size_t put_buffer(char* data, std::size_t size){
+            
+            char* start_pos= data+size-1 ; // Assuming size is 1 based
+            std::size_t unconsumed_byte_count=0;
+            std::size_t escaped_char_count=0;
+
+
+            while(!(start_pos<data)&& escaped_char_count%2!=0 && *start_pos!='\n'){
+                if(Dialect::is_escapecharacter(*start_pos)){escaped_char_count++;}
+                unconsumed_byte_count++;
+                start_pos--;
+            }
+
+            if(!(start_pos<data)){
+                
+                while(!(start_pos<data)){
+                    temp_buffer.push_front(*start_pos--);
+                }
+                
+            }
+
+            std::size_t bytes_consumed=size-unconsumed_byte_count;
+            return bytes_consumed;
 
         }
+
 
 
         // Helper methods
@@ -51,7 +87,7 @@ namespace turbo_csv {
             
             while (true) {
 
-                if (mem_stream.is_errored()) {
+                if (is_errored()) {
                     set_error_event();
                     return event{"",event_mask};
                 }
@@ -59,7 +95,7 @@ namespace turbo_csv {
                     clear_error_event();
                 }
 
-                auto byte = mem_stream.get_byte();
+                auto byte = get_byte();
 
                 if (is_no_data_event(byte, raw_token)) { return event{ "",event_mask }; }
 
@@ -158,6 +194,22 @@ namespace turbo_csv {
         }
 
         bool membership_in_escape_set(std::int32_t escape_count) noexcept { return escape_count % 2 != 0; }
+
+        bool is_errored(){
+            return temp_buffer.empty() && !stream_closed;
+        }
+
+        std::optional<std::uint8_t> get_byte(){
+            if(!temp_buffer.empty())
+            {
+                std::uint8_t byte= temp_buffer.front();
+                temp_buffer.pop_front();
+                return byte;
+            }
+            else{
+                return {};
+            }
+        }
 
     };
 }
