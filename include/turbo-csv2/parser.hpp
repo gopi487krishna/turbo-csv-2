@@ -65,12 +65,9 @@ namespace turbo_csv {
                 start_pos--;
             }
 
-            if(!(start_pos<data)){
-                
-                while(!(start_pos<data)){
-                    temp_buffer.push_front(*start_pos--);
-                }
-                
+            while(data<=start_pos){
+                temp_buffer.push_back(*data++);
+
             }
 
             std::size_t bytes_consumed=size-unconsumed_byte_count;
