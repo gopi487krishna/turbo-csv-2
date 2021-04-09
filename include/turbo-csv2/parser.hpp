@@ -37,7 +37,7 @@ namespace turbo_csv {
          * @note closing the stream essentially means trigerring the end of document
          * 
          */
-        void close_stream(){
+        void close_stream()noexcept{
             stream_closed=true;
         }
 
@@ -52,7 +52,7 @@ namespace turbo_csv {
          *       escaped
          */
 
-        std::size_t put_buffer(char* data, std::size_t size){
+        std::size_t put_buffer(char* data, std::size_t size)noexcept(false){
             
             char* start_pos= data+size-1 ; // Assuming size is 1 based
             std::size_t unconsumed_byte_count=0;
@@ -131,11 +131,11 @@ namespace turbo_csv {
         }
 
 
-        void clear_error_event() {
+        void clear_error_event()noexcept {
             // Clears the 16th but which is errored bit
             event_mask &= 15;
         }
-        void set_error_event() {
+        void set_error_event()noexcept {
             // Activates 16th bit which is errored bit
             event_mask |= 16;
         }
@@ -196,7 +196,7 @@ namespace turbo_csv {
             return temp_buffer.empty() && !stream_closed;
         }
 
-        std::optional<std::uint8_t> get_byte(){
+        std::optional<std::uint8_t> get_byte()noexcept{
             if(!temp_buffer.empty())
             {
                 std::uint8_t byte= temp_buffer.front();
